@@ -1,0 +1,27 @@
+// Minimal shim for <filesystem> when system headers are unavailable.
+// This provides a tiny subset of std::filesystem used by Crow to allow
+// building with older libstdc++ headers. It's intentionally minimal.
+
+#pragma once
+
+#include <string>
+
+namespace std {
+namespace filesystem {
+    class path {
+    public:
+        path() = default;
+        path(const std::string &s) : p(s) {}
+        path(const char* s) : p(s ? s : "") {}
+        std::string string() const { return p; }
+        operator std::string() const { return p; }
+        const std::string& native() const { return p; }
+    private:
+        std::string p;
+    };
+
+    inline bool exists(const path& /*p*/) { return false; }
+    inline path current_path() { return path("."); }
+    inline path absolute(const path& p) { return p; }
+}
+}
